@@ -168,7 +168,7 @@ class AgentService:
         Mengambil data reduksi dimensi 3D t-SNE dari ChromaDB untuk visualisasi grafik.
         """
         try:
-            documents, coords, brands = self.framework.get_plot_data(max_datapoints=max_datapoints)
+            documents, coords, colors, brands = self.framework.get_plot_data(max_datapoints=max_datapoints)
             if len(documents) == 0:
                 return {
                     "points": [],
@@ -180,14 +180,14 @@ class AgentService:
             points = []
             for i in range(len(documents)):
                 b = brands[i]
-                color = BRAND_COLORS[BRANDS.index(b)] if b in BRANDS else "#8c8c8c"
+                c = colors[i] if i < len(colors) else "#8c8c8c"
                 points.append({
                     "x": float(coords[i, 0]),
                     "y": float(coords[i, 1]),
                     "z": float(coords[i, 2]),
                     "brand": b,
                     "description": documents[i],
-                    "color": color
+                    "color": c
                 })
 
             return {

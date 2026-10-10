@@ -82,15 +82,15 @@ class CarAgentFramework:
         return self.memory
 
     @classmethod
-    def get_plot_data(cls, max_datapoints: int = 500) -> Tuple[List[str], np.ndarray, List[str]]:
+    def get_plot_data(cls, max_datapoints: int = 500) -> Tuple[List[str], np.ndarray, List[str], List[str]]:
         """
-        Mengambil vektor embedding dari ChromaDB dan mereduksinya ke 3D t-SNE untuk Plotly.
+        Mengambil vektor embedding dari ChromaDB dan mereduksinya ke 3D t-SNE untuk visualisasi 3D.
         """
         client = chromadb.PersistentClient(path=cls.DB_PATH)
         collection = client.get_or_create_collection("cars")
         count = collection.count()
         if count == 0:
-            return [], np.zeros((0, 3)), []
+            return [], np.zeros((0, 3)), [], []
 
         limit = min(count, max_datapoints)
         result = collection.get(include=["embeddings", "documents", "metadatas"], limit=limit)
@@ -112,7 +112,7 @@ class CarAgentFramework:
         else:
             reduced_vectors = np.zeros((len(vectors), 3))
 
-        return documents, reduced_vectors, colors
+        return documents, reduced_vectors, colors, brands
 
 
 if __name__ == "__main__":

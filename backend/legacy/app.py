@@ -148,7 +148,7 @@ class AutoBargainApp:
                             time.sleep(0.1)
 
             def get_3d_plot():
-                docs, vectors, colors = CarAgentFramework.get_plot_data(max_datapoints=500)
+                docs, vectors, colors, *rest = CarAgentFramework.get_plot_data(max_datapoints=500)
                 if len(vectors) == 0:
                     fig = go.Figure()
                     fig.update_layout(title="No vector data available. Run seed_database.py first.", height=360)
