@@ -8,7 +8,6 @@ from sklearn.manifold import TSNE
 import chromadb
 from dotenv import load_dotenv
 from agents.cars import CarOpportunity
-from agents.planning_agent import PlanningAgent
 
 load_dotenv(override=True)
 
@@ -53,6 +52,7 @@ class CarAgentFramework:
 
     def init_agents_as_needed(self):
         if not self.planner:
+            from agents.planning_agent import PlanningAgent
             self.planner = PlanningAgent(self.collection)
 
     def read_memory(self) -> List[CarOpportunity]:
