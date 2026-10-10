@@ -18,7 +18,19 @@ import {
   RotateCcw,
 } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 import { sendChatMessage, getChatHistory, clearChatHistory } from '../../api/client'
+
+function normalizeMarkdown(content: string): string {
+  if (!content) return ''
+  let text = content
+  // Fix tables concatenated on a single line with double pipes || -> |\n
+  text = text.replace(/\|\|\s*(?=\|)/g, '|\n')
+  text = text.replace(/\|\|\s*(?=[^\n|])/g, '|\n| ')
+  // Ensure tables preceded directly by text get a proper paragraph newline
+  text = text.replace(/([^\n])\n\|/g, '$1\n\n|')
+  return text
+}
 
 interface Message {
   id?: number
@@ -287,6 +299,7 @@ export function AIConsultantView() {
                   {msg.role === 'assistant' ? (
                     <div className="prose prose-sm max-w-none text-slate-800 space-y-2">
                       <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
                         components={{
                           h1: ({ ...props }) => (
                             <h3 className="text-sm font-extrabold text-slate-900 mt-2 mb-1.5 border-b pb-1 border-slate-100" {...props} />
@@ -318,9 +331,29 @@ export function AIConsultantView() {
                           code: ({ ...props }) => (
                             <code className="px-1.5 py-0.5 rounded bg-slate-100 text-slate-900 font-mono text-[11px] font-semibold" {...props} />
                           ),
+                          table: ({ ...props }) => (
+                            <div className="my-3 overflow-x-auto rounded-xl border border-surface-border bg-white shadow-subtle max-w-full">
+                              <table className="w-full min-w-[520px] text-left text-xs border-collapse" {...props} />
+                            </div>
+                          ),
+                          thead: ({ ...props }) => (
+                            <thead className="bg-slate-50/90 border-b border-surface-border text-slate-800 font-bold text-[11px] uppercase tracking-wider" {...props} />
+                          ),
+                          th: ({ ...props }) => (
+                            <th className="px-3.5 py-2.5 font-bold text-slate-900 border-r border-slate-100 last:border-r-0 whitespace-nowrap bg-slate-50" {...props} />
+                          ),
+                          tbody: ({ ...props }) => (
+                            <tbody className="divide-y divide-slate-100 bg-white" {...props} />
+                          ),
+                          tr: ({ ...props }) => (
+                            <tr className="hover:bg-orange-50/25 transition-colors" {...props} />
+                          ),
+                          td: ({ ...props }) => (
+                            <td className="px-3.5 py-2.5 text-slate-700 border-r border-slate-100 last:border-r-0 leading-relaxed font-sans" {...props} />
+                          ),
                         }}
                       >
-                        {msg.content}
+                        {normalizeMarkdown(msg.content)}
                       </ReactMarkdown>
                     </div>
                   ) : (
