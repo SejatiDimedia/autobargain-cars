@@ -56,14 +56,9 @@ export function Sidebar({
         {/* Brand Header */}
         <div className="flex items-center justify-between px-1">
           <div className="flex items-center gap-2.5 overflow-hidden">
-            {/* Orange Geometric Icon (matching reference screenshot icon) */}
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-brand-orange to-amber-500 flex items-center justify-center shadow-orange-sm shrink-0">
-              <svg viewBox="0 0 24 24" className="w-4.5 h-4.5 text-white stroke-current fill-none stroke-2">
-                <rect x="3" y="3" width="7" height="7" rx="1.5" />
-                <rect x="14" y="3" width="7" height="7" rx="1.5" />
-                <rect x="14" y="14" width="7" height="7" rx="1.5" />
-                <rect x="3" y="14" width="7" height="7" rx="1.5" />
-              </svg>
+            {/* Branded Logo Icon Mark */}
+            <div className="w-8 h-8 rounded-xl overflow-hidden shrink-0 shadow-xs bg-slate-900 flex items-center justify-center">
+              <img src="/icon.png" alt="AutoBargain Logo" className="w-full h-full object-cover" />
             </div>
             {!isCollapsed && (
               <span className="font-extrabold text-slate-900 tracking-tight text-base font-sans">

@@ -144,14 +144,9 @@ export function AIConsultantView() {
       {/* If no messages yet, show hero reference screen */}
       {messages.length === 0 ? (
         <div className="flex flex-col items-center justify-center flex-1 text-center py-6 animate-in fade-in duration-200">
-          {/* Centered Orange Geometric Icon */}
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-brand-orange to-amber-500 flex items-center justify-center shadow-orange-sm mb-5">
-            <svg viewBox="0 0 24 24" className="w-8 h-8 text-white stroke-current fill-none stroke-2">
-              <rect x="3" y="3" width="7" height="7" rx="1.5" />
-              <rect x="14" y="3" width="7" height="7" rx="1.5" />
-              <rect x="14" y="14" width="7" height="7" rx="1.5" />
-              <rect x="3" y="14" width="7" height="7" rx="1.5" />
-            </svg>
+          {/* Centered Branded Logo */}
+          <div className="w-20 h-20 rounded-2xl overflow-hidden shadow-subtle mb-4 border border-surface-border bg-white flex items-center justify-center p-1.5">
+            <img src="/logo.png" alt="AutoBargain Cars" className="w-full h-full object-contain" />
           </div>
 
           {/* Main Title - No banned eyebrow kicker, strong commanding typography */}
