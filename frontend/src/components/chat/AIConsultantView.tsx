@@ -24,11 +24,18 @@ import { sendChatMessage, getChatHistory, clearChatHistory } from '../../api/cli
 function normalizeMarkdown(content: string): string {
   if (!content) return ''
   let text = content
-  // Fix tables concatenated on a single line with double pipes || -> |\n
+
+  // 1. Fix joined table rows on a single line with || -> |\n
   text = text.replace(/\|\|\s*(?=\|)/g, '|\n')
   text = text.replace(/\|\|\s*(?=[^\n|])/g, '|\n| ')
-  // Ensure tables preceded directly by text get a proper paragraph newline
-  text = text.replace(/([^\n])\n\|/g, '$1\n\n|')
+
+  // 2. Ensure table has a blank line before its header row if preceded by plain text (not ending with |)
+  text = text.replace(/([^\n|])\n(\|(?:\s*[^|\n]+\s*\|)+)/g, '$1\n\n$2')
+
+  // 3. Remove any blank lines between table rows that break GFM tables
+  text = text.replace(/(\|(?:\s*[^|\n]+\s*\|)+)\n\s*\n(\|(?:\s*[^|\n]+\s*\|)+)/g, '$1\n$2')
+  text = text.replace(/(\|(?:\s*[^|\n]+\s*\|)+)\n\s*\n(\|(?:\s*[^|\n]+\s*\|)+)/g, '$1\n$2')
+
   return text
 }
 
