@@ -1,9 +1,7 @@
-import React from 'react'
-import { BarChart3, TrendingUp, ShieldCheck, Database, Trash2, Sparkles, CheckCircle2 } from 'lucide-react'
+import { BarChart3, ShieldCheck, Trash2 } from 'lucide-react'
 import { useStats } from '../../hooks/useStats'
 import { useClearOpportunities } from '../../hooks/useOpportunities'
 import { StatCards } from '../dashboard/StatCards'
-import { formatMillionRupiah } from '../../utils/currency'
 
 export function AnalyticsView() {
   const { data: stats, isLoading } = useStats()
@@ -17,7 +15,7 @@ export function AnalyticsView() {
 
   return (
     <div className="space-y-6">
-      {/* 4 Stat Overview Cards */}
+      {/* Institutional Market Depth Overview Bar */}
       <StatCards stats={stats} isLoading={isLoading} />
 
       {/* Distribution Charts Grid */}
@@ -31,12 +29,12 @@ export function AnalyticsView() {
                 Sebaran Merk Mobil Arbitrase
               </h3>
             </div>
-            <span className="text-xs text-slate-400">
+            <span className="text-xs text-slate-500 font-mono tabular-nums">
               {Object.keys(brandDist).length} Merk
             </span>
           </div>
 
-          <div className="space-y-2.5">
+          <div className="space-y-3">
             {sortedBrands.length === 0 ? (
               <p className="text-xs text-slate-400 py-6 text-center">Belum ada data merk.</p>
             ) : (
@@ -48,13 +46,13 @@ export function AnalyticsView() {
                   <div key={brand} className="space-y-1">
                     <div className="flex justify-between text-xs">
                       <span className="font-semibold text-slate-800">{brand}</span>
-                      <span className="text-slate-500 font-medium">
+                      <span className="text-slate-600 font-medium font-mono tabular-nums">
                         {count} unit ({percent}%)
                       </span>
                     </div>
                     <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-gradient-to-r from-brand-orange to-amber-500 rounded-full transition-all duration-500"
+                        className="h-full bg-brand-orange rounded-full transition-all duration-500"
                         style={{ width: `${barWidth}%` }}
                       />
                     </div>
@@ -75,37 +73,37 @@ export function AnalyticsView() {
                   Hasil Kelayakan AI Risk Inspector
                 </h3>
               </div>
-              <span className="text-xs text-slate-400">Tingkat Keamanan</span>
+              <span className="text-xs text-slate-500">Tingkat Keamanan</span>
             </div>
 
             <div className="grid grid-cols-3 gap-3">
               <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-100 text-center">
                 <p className="text-xs font-bold text-emerald-800">Grade A</p>
-                <p className="text-xl font-extrabold text-emerald-600 mt-1">
+                <p className="text-xl font-extrabold text-emerald-700 mt-1 font-mono tabular-nums">
                   {gradeDist['Grade A'] ?? 0}
                 </p>
-                <p className="text-[10px] text-emerald-700/80 mt-0.5">Low Risk</p>
+                <p className="text-[10px] text-emerald-800/80 mt-0.5">Low Risk</p>
               </div>
 
               <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-100 text-center">
                 <p className="text-xs font-bold text-amber-800">Grade B</p>
-                <p className="text-xl font-extrabold text-amber-600 mt-1">
+                <p className="text-xl font-extrabold text-amber-700 mt-1 font-mono tabular-nums">
                   {gradeDist['Grade B'] ?? 0}
                 </p>
-                <p className="text-[10px] text-amber-700/80 mt-0.5">Medium Risk</p>
+                <p className="text-[10px] text-amber-800/80 mt-0.5">Medium Risk</p>
               </div>
 
               <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-100 text-center">
                 <p className="text-xs font-bold text-rose-800">Grade C</p>
-                <p className="text-xl font-extrabold text-rose-600 mt-1">
+                <p className="text-xl font-extrabold text-rose-700 mt-1 font-mono tabular-nums">
                   {gradeDist['Grade C'] ?? 0}
                 </p>
-                <p className="text-[10px] text-rose-700/80 mt-0.5">High Risk</p>
+                <p className="text-[10px] text-rose-800/80 mt-0.5">High Risk</p>
               </div>
             </div>
 
-            <p className="text-[11px] text-slate-500 mt-4 leading-relaxed bg-slate-50 p-3 rounded-xl border border-slate-100">
-              AI Risk Inspector mengevaluasi 15+ parameter keamanan termasuk kecocokan harga wajar, riwayat servis resmi, status pajak STNK/BPKB, serta anomali jarak tempuh.
+            <p className="text-[11px] text-slate-600 mt-4 leading-relaxed bg-slate-50 p-3 rounded-xl border border-slate-100">
+              AI Risk Inspector mengevaluasi 15+ parameter keamanan termasuk estimasi True Market Value, riwayat servis bengkel resmi, status keabsahan surat kendaraan, serta indikasi rekondisi.
             </p>
           </div>
 
@@ -119,7 +117,7 @@ export function AnalyticsView() {
                 }
               }}
               disabled={isClearing}
-              className="px-3 py-1.5 rounded-xl border border-rose-200 text-rose-600 hover:bg-rose-50 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+              className="px-3 py-1.5 rounded-xl border border-rose-200 text-rose-600 hover:bg-rose-50 text-xs font-semibold flex items-center gap-1.5 transition-colors focus-visible:ring-2 focus-visible:ring-rose-500"
             >
               <Trash2 className="w-3.5 h-3.5" />
               <span>{isClearing ? 'Menghapus...' : 'Kosongkan Memori'}</span>

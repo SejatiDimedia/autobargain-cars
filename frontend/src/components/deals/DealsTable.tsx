@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import {
   useReactTable,
   getCoreRowModel,
@@ -58,14 +58,14 @@ export function DealsTable({ opportunities, isLoading }: DealsTableProps) {
             <div className="flex flex-col py-1">
               <div className="flex items-center gap-2">
                 <span className="font-bold text-slate-900 text-sm">{deal.brand} {deal.model}</span>
-                <span className="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-slate-100 text-slate-600">
+                <span className="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-mono tabular-nums">
                   {deal.year}
                 </span>
               </div>
               <div className="flex items-center gap-2 text-xs text-slate-500 mt-1">
                 <span>{deal.transmission}</span>
-                <span>•</span>
-                <span>{formatMileage(deal.mileage_km)}</span>
+                <span className="text-slate-300">•</span>
+                <span className="font-mono tabular-nums">{formatMileage(deal.mileage_km)}</span>
               </div>
             </div>
           )
@@ -76,7 +76,7 @@ export function DealsTable({ opportunities, isLoading }: DealsTableProps) {
         id: 'asking_price',
         header: 'Harga Iklan',
         cell: (info) => (
-          <div className="font-semibold text-slate-800 text-sm">
+          <div className="font-semibold text-slate-900 text-sm font-mono tabular-nums">
             {formatMillionRupiah(info.getValue())}
           </div>
         ),
@@ -86,7 +86,7 @@ export function DealsTable({ opportunities, isLoading }: DealsTableProps) {
         id: 'estimate',
         header: 'Harga Wajar (TMV)',
         cell: (info) => (
-          <div className="font-semibold text-blue-600 text-sm">
+          <div className="font-semibold text-blue-700 text-sm font-mono tabular-nums">
             {formatMillionRupiah(info.getValue())}
           </div>
         ),
@@ -103,10 +103,10 @@ export function DealsTable({ opportunities, isLoading }: DealsTableProps) {
           return (
             <div className="flex items-center gap-2">
               <div className="flex flex-col">
-                <span className="font-extrabold text-emerald-600 text-sm flex items-center gap-1">
+                <span className="font-extrabold text-emerald-700 text-sm font-mono tabular-nums flex items-center gap-1">
                   <TrendingUp className="w-3.5 h-3.5" /> +{formatMillionRupiah(discount)}
                 </span>
-                <span className="text-[11px] text-emerald-700/80 font-medium">
+                <span className="text-[11px] text-emerald-800 font-medium font-mono tabular-nums">
                   Hemat ~{percent}%
                 </span>
               </div>
@@ -129,17 +129,17 @@ export function DealsTable({ opportunities, isLoading }: DealsTableProps) {
           return (
             <div className="flex items-center gap-1.5">
               <span
-                className={`text-[11px] font-bold px-2.5 py-1 rounded-full border ${
+                className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full border ${
                   isA
-                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                    ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
                     : isB
-                    ? 'bg-amber-50 text-amber-700 border-amber-200'
-                    : 'bg-rose-50 text-rose-700 border-rose-200'
+                    ? 'bg-amber-50 text-amber-800 border-amber-200'
+                    : 'bg-rose-50 text-rose-800 border-rose-200'
                 }`}
               >
                 {isA ? 'Grade A' : isB ? 'Grade B' : 'Grade C'}
               </span>
-              <span className="text-xs text-slate-500 font-medium">
+              <span className="text-xs text-slate-600 font-medium font-mono tabular-nums">
                 {score}/10
               </span>
             </div>
@@ -153,10 +153,10 @@ export function DealsTable({ opportunities, isLoading }: DealsTableProps) {
         cell: (info) => {
           const opp = info.row.original
           return (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
               <button
                 onClick={() => setActiveDeal(opp)}
-                className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors flex items-center gap-1"
+                className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-800 transition-colors flex items-center gap-1 focus-visible:ring-2 focus-visible:ring-brand-orange"
                 title="Lihat Detail Inspeksi"
               >
                 <Eye className="w-3.5 h-3.5" /> Detail
@@ -166,7 +166,7 @@ export function DealsTable({ opportunities, isLoading }: DealsTableProps) {
                   href={opp.deal.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-1.5 rounded-lg text-slate-400 hover:text-brand-orange hover:bg-orange-50 transition-colors"
+                  className="p-1.5 rounded-lg text-slate-500 hover:text-brand-orange hover:bg-orange-50 transition-colors focus-visible:ring-2 focus-visible:ring-brand-orange"
                   title="Buka Iklan Asli"
                 >
                   <ExternalLink className="w-4 h-4" />
@@ -212,13 +212,13 @@ export function DealsTable({ opportunities, isLoading }: DealsTableProps) {
             value={globalFilter ?? ''}
             onChange={(e) => setGlobalFilter(e.target.value)}
             placeholder="Cari merk, tipe mobil, atau kata kunci..."
-            className="w-full pl-9 pr-4 py-2 rounded-xl bg-surface-subtle border border-surface-border text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-orange/30 focus:border-brand-orange transition-all"
+            className="w-full pl-9 pr-4 py-2 rounded-xl bg-surface-subtle border border-surface-border text-xs text-slate-900 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-orange/30 focus:border-brand-orange transition-all"
           />
         </div>
 
         {/* Filter Controls */}
         <div className="flex items-center gap-2.5 flex-wrap">
-          <div className="flex items-center gap-1.5 text-xs text-slate-500 font-medium">
+          <div className="flex items-center gap-1.5 text-xs text-slate-600 font-medium">
             <Filter className="w-3.5 h-3.5" /> Filter:
           </div>
 
@@ -226,7 +226,7 @@ export function DealsTable({ opportunities, isLoading }: DealsTableProps) {
           <select
             value={selectedBrand}
             onChange={(e) => setSelectedBrand(e.target.value)}
-            className="px-3 py-1.5 rounded-xl bg-surface-subtle border border-surface-border text-xs font-medium text-slate-700 focus:outline-none focus:border-brand-orange cursor-pointer"
+            className="px-3 py-1.5 rounded-xl bg-surface-subtle border border-surface-border text-xs font-semibold text-slate-800 focus:outline-none focus:border-brand-orange cursor-pointer"
           >
             {brands.map((b) => (
               <option key={b} value={b}>
@@ -239,7 +239,7 @@ export function DealsTable({ opportunities, isLoading }: DealsTableProps) {
           <select
             value={minDiscount}
             onChange={(e) => setMinDiscount(Number(e.target.value))}
-            className="px-3 py-1.5 rounded-xl bg-surface-subtle border border-surface-border text-xs font-medium text-slate-700 focus:outline-none focus:border-brand-orange cursor-pointer"
+            className="px-3 py-1.5 rounded-xl bg-surface-subtle border border-surface-border text-xs font-semibold text-slate-800 focus:outline-none focus:border-brand-orange cursor-pointer"
           >
             <option value={0}>Semua Margin</option>
             <option value={20}>Min. Margin 20 Jt</option>
@@ -248,7 +248,7 @@ export function DealsTable({ opportunities, isLoading }: DealsTableProps) {
             <option value={100}>Min. Margin 100 Jt</option>
           </select>
 
-          <span className="text-xs text-slate-400 pl-1">
+          <span className="text-xs text-slate-500 font-mono tabular-nums pl-1">
             {table.getFilteredRowModel().rows.length} Unit
           </span>
         </div>
@@ -267,7 +267,7 @@ export function DealsTable({ opportunities, isLoading }: DealsTableProps) {
                       <th
                         key={header.id}
                         onClick={header.column.getToggleSortingHandler()}
-                        className="px-5 py-3.5 text-xs font-bold text-slate-600 uppercase tracking-wider select-none cursor-pointer hover:bg-slate-100/80 transition-colors"
+                        className="px-5 py-3.5 text-xs font-bold text-slate-700 uppercase tracking-wider select-none cursor-pointer hover:bg-slate-100/80 transition-colors"
                       >
                         <div className="flex items-center gap-1.5">
                           {flexRender(header.column.columnDef.header, header.getContext())}
@@ -292,14 +292,14 @@ export function DealsTable({ opportunities, isLoading }: DealsTableProps) {
             <tbody className="divide-y divide-surface-border">
               {isLoading ? (
                 <tr>
-                  <td colSpan={columns.length} className="text-center py-12 text-slate-400 text-xs">
+                  <td colSpan={columns.length} className="text-center py-12 text-slate-500 text-xs">
                     <Sparkles className="w-5 h-5 animate-spin mx-auto mb-2 text-brand-orange" />
                     Memuat data peluang arbitrase...
                   </td>
                 </tr>
               ) : table.getRowModel().rows.length === 0 ? (
                 <tr>
-                  <td colSpan={columns.length} className="text-center py-12 text-slate-400 text-xs">
+                  <td colSpan={columns.length} className="text-center py-12 text-slate-500 text-xs">
                     Tidak ada unit mobil yang sesuai dengan kriteria filter.
                   </td>
                 </tr>
@@ -322,10 +322,10 @@ export function DealsTable({ opportunities, isLoading }: DealsTableProps) {
         </div>
 
         {/* Pagination Bar */}
-        <div className="px-5 py-3 border-t border-surface-border bg-surface-subtle/50 flex items-center justify-between text-xs text-slate-500">
+        <div className="px-5 py-3 border-t border-surface-border bg-surface-subtle/50 flex items-center justify-between text-xs text-slate-600">
           <div>
-            Halaman <span className="font-semibold text-slate-700">{table.getState().pagination.pageIndex + 1}</span> dari{' '}
-            <span className="font-semibold text-slate-700">{table.getPageCount() || 1}</span>
+            Halaman <span className="font-semibold text-slate-800 font-mono tabular-nums">{table.getState().pagination.pageIndex + 1}</span> dari{' '}
+            <span className="font-semibold text-slate-800 font-mono tabular-nums">{table.getPageCount() || 1}</span>
           </div>
 
           <div className="flex items-center gap-2">

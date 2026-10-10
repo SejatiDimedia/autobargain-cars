@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import { Database, Sparkles, Info } from 'lucide-react'
 import { useTsnePlot } from '../../hooks/useStats'
 import { TsnePoint } from '../../types/api'
@@ -33,14 +33,14 @@ export function VectorSpaceView() {
       {/* Header Bar */}
       <div className="flex flex-col md:flex-row gap-3 items-start md:items-center justify-between p-4 bg-white rounded-2xl border border-surface-border shadow-subtle">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-xl bg-purple-50 text-purple-600 border border-purple-100">
+          <div className="p-2.5 rounded-xl bg-purple-50 text-purple-700 border border-purple-100">
             <Database className="w-5 h-5" />
           </div>
           <div>
             <h3 className="text-sm font-bold text-slate-900">
               ChromaDB 3D Embedding Vector Space
             </h3>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <p className="text-xs text-slate-600 mt-0.5">
               Proyeksi t-SNE dari kemiripan semantik mobil bekas pada Vector Database.
             </p>
           </div>
@@ -50,10 +50,10 @@ export function VectorSpaceView() {
         <div className="flex items-center gap-1.5 flex-wrap">
           <button
             onClick={() => setSelectedBrand('all')}
-            className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
+            className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all focus-visible:ring-2 focus-visible:ring-brand-orange ${
               selectedBrand === 'all'
                 ? 'bg-slate-900 text-white'
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
             }`}
           >
             Semua ({points.length})
@@ -65,10 +65,10 @@ export function VectorSpaceView() {
               <button
                 key={brand}
                 onClick={() => setSelectedBrand(brand)}
-                className={`px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all border ${
+                className={`px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all border focus-visible:ring-2 focus-visible:ring-brand-orange ${
                   isSelected
                     ? 'border-slate-800 bg-white text-slate-900 shadow-sm'
-                    : 'border-transparent bg-slate-50 text-slate-600 hover:bg-slate-100'
+                    : 'border-transparent bg-slate-50 text-slate-700 hover:bg-slate-100'
                 }`}
               >
                 <span className="w-2 h-2 rounded-full" style={{ backgroundColor: color }} />
@@ -82,12 +82,12 @@ export function VectorSpaceView() {
       {/* Main Canvas Area */}
       <div className="relative bg-white rounded-2xl border border-surface-border shadow-subtle p-6 flex flex-col items-center justify-center min-h-[460px] overflow-hidden">
         {isLoading ? (
-          <div className="flex flex-col items-center gap-2 text-slate-400 text-xs">
+          <div className="flex flex-col items-center gap-2 text-slate-500 text-xs">
             <Sparkles className="w-6 h-6 animate-spin text-brand-orange" />
             <span>Menghitung proyeksi t-SNE dari ChromaDB embeddings...</span>
           </div>
         ) : points.length === 0 ? (
-          <div className="text-slate-400 text-xs">Database belum memiliki titik data embedding.</div>
+          <div className="text-slate-500 text-xs">Database belum memiliki titik data embedding.</div>
         ) : (
           <div className="w-full h-full flex flex-col items-center">
             {/* SVG Interactive Scatter Visualization */}
@@ -108,8 +108,8 @@ export function VectorSpaceView() {
                     cy={normY}
                     r={isHovered ? 8 : 5}
                     fill={pt.color}
-                    fillOpacity={isHovered ? 1 : 0.75}
-                    stroke={isHovered ? '#1e293b' : '#ffffff'}
+                    fillOpacity={isHovered ? 1 : 0.8}
+                    stroke={isHovered ? '#0f172a' : '#ffffff'}
                     strokeWidth={isHovered ? 2 : 1}
                     className="cursor-pointer transition-all duration-150"
                     onMouseEnter={() => setHoveredPoint(pt)}
@@ -126,16 +126,16 @@ export function VectorSpaceView() {
                 <div>
                   <div className="flex items-center gap-2">
                     <span className="font-bold text-slate-900">{hoveredPoint.brand}</span>
-                    <span className="text-[10px] px-1.5 py-0.2 rounded bg-slate-200/80 text-slate-700">
+                    <span className="text-[10px] px-1.5 py-0.2 rounded bg-slate-200/80 text-slate-700 font-mono tabular-nums">
                       Embedding Vector #{points.indexOf(hoveredPoint) + 1}
                     </span>
                   </div>
-                  <p className="text-[11px] text-slate-600 mt-0.5 line-clamp-2 leading-relaxed">
+                  <p className="text-[11px] text-slate-700 mt-0.5 line-clamp-2 leading-relaxed">
                     {hoveredPoint.description}
                   </p>
                 </div>
               ) : (
-                <p className="text-[11px] text-slate-400 italic">
+                <p className="text-[11px] text-slate-500 italic">
                   Arahkan kursor ke titik vektor untuk melihat detail dokumen mobil yang terindeks di ChromaDB.
                 </p>
               )}

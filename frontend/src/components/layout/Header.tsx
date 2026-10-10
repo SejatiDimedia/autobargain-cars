@@ -1,7 +1,5 @@
-import React from 'react'
-import { ChevronDown, Share2, RefreshCw, Radio, FileText, Check } from 'lucide-react'
-import { useAgentStatus } from '../../hooks/useAgentStatus'
-import { useOpportunities } from '../../hooks/useOpportunities'
+import { useState } from 'react'
+import { ChevronDown, Share2, RefreshCw, FileText, Check } from 'lucide-react'
 
 interface HeaderProps {
   onRefresh: () => void
@@ -9,9 +7,7 @@ interface HeaderProps {
 }
 
 export function Header({ onRefresh, isRefreshing }: HeaderProps) {
-  const { data: status } = useAgentStatus()
-  const { data: opportunities = [] } = useOpportunities()
-  const [copied, setCopied] = React.useState(false)
+  const [copied, setCopied] = useState(false)
 
   const handleShare = () => {
     if (navigator.clipboard) {
@@ -25,12 +21,12 @@ export function Header({ onRefresh, isRefreshing }: HeaderProps) {
     <header className="px-6 py-3.5 border-b border-surface-border bg-white flex items-center justify-between select-none shrink-0">
       {/* Left: Model Selector (Reference: Cognivo Core v1 ⌵) */}
       <div className="flex items-center gap-3">
-        <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl hover:bg-surface-hover text-slate-800 text-sm font-bold transition-colors">
+        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-slate-900 text-sm font-bold">
           <span>AutoBargain Core v1.0</span>
           <ChevronDown className="w-4 h-4 text-slate-400" />
-        </button>
+        </div>
 
-        <span className="text-xs px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 font-medium hidden sm:inline-block">
+        <span className="text-xs px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 font-medium hidden sm:inline-block">
           Ensemble RAG + ResNet
         </span>
       </div>
@@ -40,7 +36,7 @@ export function Header({ onRefresh, isRefreshing }: HeaderProps) {
         <button
           onClick={onRefresh}
           disabled={isRefreshing}
-          className="p-2 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-surface-hover transition-colors"
+          className="p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-surface-hover transition-colors focus-visible:ring-2 focus-visible:ring-brand-orange"
           title="Refresh Data Peluang"
         >
           <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin text-brand-orange' : ''}`} />
@@ -50,7 +46,7 @@ export function Header({ onRefresh, isRefreshing }: HeaderProps) {
           href="/docs"
           target="_blank"
           rel="noopener noreferrer"
-          className="p-2 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-surface-hover transition-colors"
+          className="p-2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-surface-hover transition-colors focus-visible:ring-2 focus-visible:ring-brand-orange"
           title="Dokumentasi Swagger API"
         >
           <FileText className="w-4 h-4" />
@@ -58,9 +54,9 @@ export function Header({ onRefresh, isRefreshing }: HeaderProps) {
 
         <button
           onClick={handleShare}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-surface-border hover:bg-surface-hover text-xs font-semibold text-slate-700 transition-colors shadow-subtle"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-surface-border hover:bg-surface-hover text-xs font-semibold text-slate-800 transition-colors shadow-subtle focus-visible:ring-2 focus-visible:ring-brand-orange"
         >
-          {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Share2 className="w-3.5 h-3.5" />}
+          {copied ? <Check className="w-3.5 h-3.5 text-emerald-700" /> : <Share2 className="w-3.5 h-3.5" />}
           <span>{copied ? 'Tersalin!' : 'Share'}</span>
         </button>
       </div>

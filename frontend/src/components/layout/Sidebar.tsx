@@ -1,18 +1,12 @@
-import React from 'react'
 import {
-  Car,
   Search,
   MessageSquare,
   BarChart3,
   Database,
   Terminal,
-  Settings,
   Plus,
   PanelLeftClose,
-  Sparkles,
-  TrendingUp,
   Cpu,
-  CheckCircle2,
   RefreshCw,
 } from 'lucide-react'
 import { useAgentStatus, useRunAgent } from '../../hooks/useAgentStatus'
@@ -80,7 +74,7 @@ export function Sidebar({
 
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors focus-visible:ring-2 focus-visible:ring-brand-orange"
             title={isCollapsed ? 'Buka Sidebar' : 'Tutup Sidebar'}
           >
             <PanelLeftClose className={`w-4 h-4 transition-transform ${isCollapsed ? 'rotate-180' : ''}`} />
@@ -91,7 +85,7 @@ export function Sidebar({
         <button
           onClick={() => runScan()}
           disabled={status?.is_running || isStartingScan}
-          className={`w-full py-2.5 px-3 rounded-xl bg-brand-orange hover:bg-brand-orange-hover text-white font-semibold text-xs flex items-center shadow-orange-sm transition-all disabled:opacity-60 disabled:cursor-not-allowed ${
+          className={`w-full py-2.5 px-3 rounded-xl bg-brand-orange hover:bg-brand-orange-hover text-white font-semibold text-xs flex items-center shadow-orange-sm transition-all disabled:opacity-60 disabled:cursor-not-allowed focus-visible:ring-2 focus-visible:ring-brand-orange ${
             isCollapsed ? 'justify-center' : 'justify-between'
           }`}
           title="Memicu siklus pemindaian pasar baru"
@@ -107,9 +101,9 @@ export function Sidebar({
             )}
           </div>
           {!isCollapsed && (
-            <span className="text-[10px] bg-white/20 px-1.5 py-0.5 rounded text-white/90 font-mono">
-              ⚡
-            </span>
+            <kbd className="text-[10px] bg-white/25 px-1.5 py-0.5 rounded text-white font-mono font-medium">
+              ⌘S
+            </kbd>
           )}
         </button>
 
@@ -122,7 +116,7 @@ export function Sidebar({
               <button
                 key={item.id}
                 onClick={() => setActiveTab(item.id)}
-                className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
+                className={`w-full flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-semibold transition-all focus-visible:ring-2 focus-visible:ring-brand-orange ${
                   isActive
                     ? 'bg-slate-900 text-white shadow-sm'
                     : 'text-slate-600 hover:text-slate-900 hover:bg-surface-hover'
@@ -133,8 +127,8 @@ export function Sidebar({
                 {!isCollapsed && <span className="flex-1 text-left">{item.label}</span>}
                 {!isCollapsed && item.badge && (
                   <span
-                    className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
-                      isActive ? 'bg-slate-800 text-orange-400' : 'bg-slate-200/80 text-slate-600'
+                    className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold font-mono tabular-nums ${
+                      isActive ? 'bg-slate-800 text-orange-400' : 'bg-slate-200/80 text-slate-700'
                     }`}
                   >
                     {item.badge}
@@ -148,7 +142,7 @@ export function Sidebar({
         {/* Recent Deals Section (Reference: TODAY / YESTERDAY history items) */}
         {!isCollapsed && (
           <div className="pt-3 border-t border-surface-border space-y-2">
-            <p className="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+            <p className="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-500">
               Peluang Terhangat
             </p>
             <div className="space-y-0.5 max-h-48 overflow-y-auto">
@@ -165,7 +159,7 @@ export function Sidebar({
                       <span className="truncate group-hover:text-brand-orange transition-colors">
                         {opp.deal.brand} {opp.deal.model}
                       </span>
-                      <span className="text-[10px] font-bold text-emerald-600 ml-1 shrink-0">
+                      <span className="text-[10px] font-bold text-emerald-700 ml-1 shrink-0 font-mono tabular-nums">
                         +{Math.round(opp.discount)}jt
                       </span>
                     </div>
@@ -192,15 +186,15 @@ export function Sidebar({
                 title={status?.is_running ? 'Running' : 'Standby'}
               />
             </div>
-            <div className="text-[11px] text-slate-500 flex items-center justify-between pt-1 border-t border-slate-100">
+            <div className="text-[11px] text-slate-600 flex items-center justify-between pt-1 border-t border-slate-100">
               <span>Status:</span>
-              <span className="font-semibold text-slate-700">
+              <span className="font-semibold text-slate-800">
                 {status?.is_running ? 'Scanning Pasar...' : 'Ready / Standby'}
               </span>
             </div>
-            <div className="text-[11px] text-slate-500 flex items-center justify-between">
+            <div className="text-[11px] text-slate-600 flex items-center justify-between">
               <span>Total Siklus:</span>
-              <span className="font-semibold text-slate-700">{status?.total_cycles ?? 0} Kali</span>
+              <span className="font-semibold text-slate-800 font-mono tabular-nums">{status?.total_cycles ?? 0} Kali</span>
             </div>
           </div>
         ) : (
