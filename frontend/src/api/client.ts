@@ -60,9 +60,27 @@ export async function getTsnePlot(maxDatapoints: number = 350): Promise<TsnePlot
 }
 
 // 4. AI Consultant Chat API
-export async function sendChatMessage(message: string, sessionId: string = 'default'): Promise<{ response: string; session_id: string }> {
+export async function sendChatMessage(
+  message: string,
+  sessionId: string = 'default'
+): Promise<{ response: string; session_id: string; timestamp: string }> {
   return request('/chat', {
     method: 'POST',
     body: JSON.stringify({ message, session_id: sessionId }),
+  })
+}
+
+export async function getChatHistory(
+  sessionId: string = 'default',
+  limit: number = 50
+): Promise<{ session_id: string; messages: Array<{ id?: number; role: 'user' | 'assistant'; content: string; timestamp: string }>; total: number }> {
+  return request(`/chat/history?session_id=${sessionId}&limit=${limit}`)
+}
+
+export async function clearChatHistory(
+  sessionId: string = 'default'
+): Promise<{ status: string; message: string; deleted_count: number }> {
+  return request(`/chat/history?session_id=${sessionId}`, {
+    method: 'DELETE',
   })
 }

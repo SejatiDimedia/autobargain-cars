@@ -35,6 +35,8 @@ env/
 cars_vectorstore/
 *.log
 cars_memory.json
+*.db
+chat_history.db
 
 # OS specific
 .DS_Store

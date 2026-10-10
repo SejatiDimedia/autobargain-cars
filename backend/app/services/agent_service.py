@@ -29,10 +29,17 @@ class AgentService:
 
     def _init_service(self):
         self.framework = CarAgentFramework()
+        self.conversational_agent = None
         self.is_running = False
         self.last_run: Optional[str] = None
         self.last_error: Optional[str] = None
         self.total_cycles = 0
+
+    def get_conversational_agent(self):
+        if self.conversational_agent is None:
+            from agents.conversational_agent import ConversationalAgent
+            self.conversational_agent = ConversationalAgent(framework=self.framework)
+        return self.conversational_agent
 
     def get_opportunities(
         self,

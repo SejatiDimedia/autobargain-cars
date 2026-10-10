@@ -206,37 +206,54 @@ class ConversationalAgent(Agent):
     def chat(self, user_message: str, user_id: str = "default_user") -> str:
         """
         Menjalankan loop percakapan ReAct: LLM menalar, memanggil tools jika perlu, dan membalas secara natural.
+        Menyimpan riwayat percakapan secara persisten ke SQLite via chat_storage.
         """
-        if user_id not in self.chat_histories:
-            self.chat_histories[user_id] = [
-                {
-                    "role": "system",
-                    "content": (
-                        "Anda adalah 'AutoBargain AI Consultant', konsultan investasi dan radar arbitrase mobil bekas profesional di Indonesia.\n\n"
-                        "PANDUAN FORMAT TAMPILAN TELEGRAM (SANGAT PENTING):\n"
-                        "1. JANGAN PERNAH MENGGUNAKAN MARKDOWN TABLE (tabel dengan garis pipa `| ... |`) karena tabel sangat rusak, terpotong, dan tidak bisa dibaca di layar HP Telegram!\n"
-                        "2. Ketika menyajikan daftar mobil, WAJIB gunakan FORMAT KARTU MOBILE (Mobile Card Block) yang rapi seperti contoh berikut:\n\n"
-                        "🚗 *1. Toyota Avanza 1.5 Veloz (2020)*\n"
-                        "• 💰 *Harga Iklan:* Rp 195.0 Juta\n"
-                        "• 📈 *Estimasi Pasar:* Rp 225.0 Juta\n"
-                        "• 🔥 *Potensi Untung:* Rp 30.0 Juta (Hemat 13.3%)\n"
-                        "• 🛡️ *Keamanan:* ⭐ 9.2/10 (Grade A - Low Risk)\n"
-                        "• 🛣️ *Odometer:* 40.000 km (Automatic)\n"
-                        "• 🔗 [Klik untuk Lihat Iklan Unit](https://...)\n"
-                        "────────────────────────────\n\n"
-                        "3. Gunakan nada bicara ramah, profesional, ringkas, dan fokus pada angka keuntungan finansial.\n"
-                        "4. Selalu panggil tools yang relevan jika pengguna meminta taksiran harga, pencarian mobil, audit risiko, atau live scan."
-                    )
-                }
-            ]
+        chat_storage_module = None
+        try:
+            from app.core.chat_storage import chat_storage
+            chat_storage_module = chat_storage
+            # Simpan user message ke persistent DB
+            chat_storage.add_message(session_id=user_id, role="user", content=user_message)
+            recent_db_msgs = chat_storage.get_messages(session_id=user_id, limit=10)
+        except Exception as e:
+            logger.warning(f"ChatStorage not available or error: {e}")
+            recent_db_msgs = []
 
-        history = self.chat_histories[user_id]
-        history.append({"role": "user", "content": user_message})
+        system_instruction = (
+            "Anda adalah 'AutoBargain AI Consultant', penasihat investasi dan analis valuasi mobil bekas profesional terkemuka di Indonesia.\n\n"
+            "PEDOMAN STRUKTUR RESPON (EYE-CATCHING, PROFESIONAL & DATA-DRIVEN):\n"
+            "1. **Format Markdown Rapi & Bernilai Tinggi:**\n"
+            "   Gunakan pemformatan Markdown yang bersih: heading (###), bullet points berjarak rapi, penekanan tebal (**bold**), dan blockquotes (>).\n"
+            "2. **Valuasi & Kartu Unit:**\n"
+            "   Sajikan taksiran harga secara transparan dan detail:\n"
+            "   - 🚗 **Spesifikasi Unit:** Nama Lengkap Mobil, Tahun, Transmisi, Odometer\n"
+            "   - 💰 **Harga Pasar Wajar:** Rp [X] Juta (rentang bawah s/d atas)\n"
+            "   - 📊 **Analisis Depresiasi & Posisi Pasar:** Evaluasi apakah harga murah, wajar, atau mahal beserta alasannya\n"
+            "   - 🛡️ **Audit Risiko & Keamanan:** Skor Keamanan (skala 1-10), status kelengkapan BPKB/STNK, dan catatan riwayat banjir/tabrakan\n"
+            "   - 🎯 **Strategi Tawar-Menawar:** Poin taktis konkret yang bisa langsung diucapkan pembeli saat negosiasi di tempat\n"
+            "3. **Gaya Bahasa:** Ramah, lugas, percaya diri, berbasis data realita pasar mobil Indonesia, dan solutif.\n"
+            "4. **Tools:** Selalu panggil tool yang relevan (`estimate_car_valuation`, `search_memory_deals`, `inspect_car_risk`, `trigger_live_scan`) untuk menjawab dengan angka presisi."
+        )
+
+        active_messages = [{"role": "system", "content": system_instruction}]
+
+        # Tambahkan history percakapan sebelumnya dari database
+        if recent_db_msgs:
+            # exclude the very last user message we just inserted to avoid duplication
+            for m in recent_db_msgs[:-1]:
+                active_messages.append({"role": m["role"], "content": m["content"]})
+
+        active_messages.append({"role": "user", "content": user_message})
 
         tools = self.get_tool_definitions()
 
-        # Batasi histori chat terakhir agar tidak melebihi konteks
-        active_messages = [history[0]] + history[-6:]
+        def _save_and_return(reply_text: str) -> str:
+            if chat_storage_module:
+                try:
+                    chat_storage_module.add_message(session_id=user_id, role="assistant", content=reply_text)
+                except Exception as ex:
+                    logger.warning(f"Gagal menyimpan assistant reply ke DB: {ex}")
+            return reply_text
 
         for model in self.models_to_try:
             try:
@@ -254,8 +271,7 @@ class ConversationalAgent(Agent):
                     # Jika tidak ada tool calls, berarti LLM siap membalas ke pengguna
                     if not getattr(msg, "tool_calls", None):
                         reply = msg.content or "Maaf, saya belum memahami pesan Anda. Bisa diulang?"
-                        history.append({"role": "assistant", "content": reply})
-                        return reply
+                        return _save_and_return(reply)
 
                     # Jika ada tool calls, eksekusi tool terkait
                     active_messages.append(msg)
@@ -288,11 +304,11 @@ class ConversationalAgent(Agent):
                 # Jika loop selesai, buat response akhir
                 final_res = completion(model=model, messages=active_messages)
                 final_reply = final_res.choices[0].message.content or "Selesai memproses data."
-                history.append({"role": "assistant", "content": final_reply})
-                return final_reply
+                return _save_and_return(final_reply)
 
             except Exception as e:
                 self.log(f"Model {model} encountered error in ReAct loop: {e}. Trying fallback...")
                 continue
 
-        return "Maaf, saat ini koneksi AI sedang sibuk. Anda tetap dapat menggunakan perintah standar seperti `/deals`, `/stats`, atau `/scan`."
+        fallback_msg = "Maaf, saat ini koneksi AI sedang sibuk. Silakan coba kembali sesaat lagi atau gunakan fitur pencarian pada menu Deals."
+        return _save_and_return(fallback_msg)
