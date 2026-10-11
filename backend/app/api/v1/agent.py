@@ -60,32 +60,32 @@ async def stream_agent_logs(request: Request):
 
     async def event_generator():
         try:
-            # Kirim log awal dari history terlebih dahulu
-            for initial_log in broadcast_handler.get_history(limit=20):
+            # Kirim riwayat log awal dari buffer history
+            for initial_log in broadcast_handler.get_history(limit=50):
                 yield {
                     "event": "log",
                     "data": json.dumps(initial_log)
                 }
 
             while True:
-                # Periksa apakah koneksi klien masih hidup
-                if await request.is_disconnected():
-                    break
-
-                try:
-                    # Tunggu pesan log baru selama 1 detik (agar bisa cek disconnect secara berkala)
-                    log_entry = await asyncio.wait_for(queue.get(), timeout=1.0)
-                    yield {
-                        "event": "log",
-                        "data": json.dumps(log_entry)
-                    }
-                except asyncio.TimeoutError:
-                    # Kirim heartbeat komentar agar koneksi HTTP tetap hangat
-                    yield {
-                        "event": "ping",
-                        "data": "keep-alive"
-                    }
+                # Ambil log terbaru dari broadcast queue
+                log_entry = await queue.get()
+                yield {
+                    "event": "log",
+                    "data": json.dumps(log_entry)
+                }
+        except asyncio.CancelledError:
+            # Klien memutuskan koneksi SSE (misal pindah tab atau tutup browser)
+            pass
         finally:
             broadcast_handler.unregister_listener(queue)
 
-    return EventSourceResponse(event_generator())
+    return EventSourceResponse(
+        event_generator(),
+        headers={
+            "Cache-Control": "no-cache, no-transform",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+        },
+        ping=15
+    )

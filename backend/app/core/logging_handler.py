@@ -81,11 +81,25 @@ class BroadcastLogHandler(logging.Handler):
             }
             self.history.append(log_entry)
 
-            # Broadcast ke subscriber async jika event loop aktif
-            if self._loop and self._loop.is_running():
+            # Broadcast ke subscriber async
+            loop = self._loop
+            if not loop or not loop.is_running():
+                try:
+                    loop = asyncio.get_running_loop()
+                    self._loop = loop
+                except RuntimeError:
+                    pass
+
+            if loop and loop.is_running():
                 for queue in list(self.listeners):
                     try:
-                        self._loop.call_soon_threadsafe(queue.put_nowait, log_entry)
+                        loop.call_soon_threadsafe(queue.put_nowait, log_entry)
+                    except Exception:
+                        pass
+            else:
+                for queue in list(self.listeners):
+                    try:
+                        queue.put_nowait(log_entry)
                     except Exception:
                         pass
         except Exception:
@@ -95,7 +109,13 @@ class BroadcastLogHandler(logging.Handler):
         return list(self.history)[-limit:]
 
     def register_listener(self) -> asyncio.Queue:
-        q = asyncio.Queue(maxsize=100)
+        # Tangkap event loop aktif saat listener mendaftar
+        if not self._loop or not self._loop.is_running():
+            try:
+                self._loop = asyncio.get_running_loop()
+            except RuntimeError:
+                pass
+        q = asyncio.Queue(maxsize=300)
         self.listeners.add(q)
         return q
 
