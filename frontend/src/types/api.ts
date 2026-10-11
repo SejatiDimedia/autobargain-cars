@@ -42,6 +42,7 @@ export interface LogEntry {
   level: string
   message: string
   raw: string
+  agent?: string
 }
 
 export interface OpportunityFilterParams {
